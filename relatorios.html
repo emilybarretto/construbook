@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Construbook - Relatórios Profissionais</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-logo"><h2>🏗️ Construbook</h2></div>
+            <ul class="sidebar-menu">
+                <li><a href="dashboard.html"><i class="fas fa-home"></i> Início</a></li>
+                <li><a href="nova-obra.html"><i class="fas fa-building"></i> Obras</a></li>
+                <li><a href="etapas.html"><i class="fas fa-tasks"></i> Etapas</a></li>
+                <li><a href="compras.html"><i class="fas fa-shopping-cart"></i> Compras</a></li>
+                <li><a href="financeiro.html"><i class="fas fa-dollar-sign"></i> Financeiro</a></li>
+                <li class="active"><a href="relatorios.html"><i class="fas fa-file-pdf"></i> Relatórios</a></li>
+            </ul>
+        </aside>
+
+        <div class="main-wrapper">
+            <header class="topbar">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Buscar no sistema...">
+                </div>
+                
+                <div class="user-profile">
+                    <i class="fas fa-bell notification-icon" style="margin-right: 15px; color: #64748b; cursor: pointer;"></i>
+                    <div class="avatar-iniciais">EN</div>
+                    <span class="user-name">Carregando...</span>
+                </div>
+            </header>
+
+            <main class="content">
+                <div class="page-header">
+                    <h1>Central de Relatórios</h1>
+                    <p>Gere documentos em PDF com o status atualizado da sua obra.</p>
+                </div>
+
+                <div class="card-content" style="max-width: 600px; margin: 40px auto; text-align: center; padding: 40px; background: white; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.05);">
+                    <i class="fas fa-file-pdf" style="font-size: 60px; color: #ef4444; margin-bottom: 20px;"></i>
+                    <h2 style="margin-bottom: 10px;">Relatório Consolidado de Obra</h2>
+                    <p style="margin-bottom: 30px; color: #64748b;">Selecione a obra abaixo para baixar o PDF com o resumo financeiro e cronograma de etapas.</p>
+                    
+                    <div class="input-group" style="text-align: left; margin-bottom: 25px;">
+                        <label style="font-weight: 600; color: #1e293b; display: block; margin-bottom: 8px;">Selecione a Obra:</label>
+                        <select id="obraSelectRelatorio" style="width: 100%; padding: 15px; border-radius: 10px; border: 1px solid #cbd5e1; font-size: 15px; outline: none; background: #f8fafc;">
+                            <option value="">Carregando obras...</option>
+                        </select>
+                    </div>
+
+                    <button id="btnGerarPDF" class="btn-primary" style="width: 100%; background: #ef4444; border: none; height: 55px; font-size: 16px; font-weight: 700; border-radius: 10px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                        <i class="fas fa-download"></i> Gerar e Baixar PDF
+                    </button>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+    
+    <script src="firebase-config.js"></script>
+    <script src="relatorios.js"></script>
+
+</body>
+</html>

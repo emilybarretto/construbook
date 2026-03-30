@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Construbook - Cadastrar Obra</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-logo"><h2>🏗️ Construbook</h2></div>
+            <ul class="sidebar-menu">
+                <li><a href="dashboard.html"><i class="fas fa-home"></i> Início</a></li>
+                <li class="active"><a href="nova-obra.html"><i class="fas fa-building"></i> Obras</a></li>
+                <li><a href="etapas.html"><i class="fas fa-tasks"></i> Etapas</a></li>
+                <li><a href="compras.html"><i class="fas fa-shopping-cart"></i> Compras</a></li>
+                <li><a href="financeiro.html"><i class="fas fa-dollar-sign"></i> Financeiro</a></li>
+                <li><a href="relatorios.html"><i class="fas fa-file-pdf"></i> Relatórios</a></li>
+            </ul>
+        </aside>
+
+        <div class="main-wrapper">
+            <header class="topbar">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Buscar no sistema...">
+                </div>
+                <div class="user-profile">
+                    <i class="fas fa-bell notification-icon" style="margin-right: 15px; color: #64748b; cursor: pointer;"></i>
+                    <div class="avatar-iniciais">EN</div>
+                    <span class="user-name">Carregando...</span>
+                </div>
+            </header>
+
+            <main class="content">
+                <div class="page-header">
+                    <h1>Cadastrar Nova Obra</h1>
+                    <p>Home > Obras > <strong>Nova Obra</strong></p>
+                </div>
+
+                <div class="card-content">
+                    <form id="formObra" class="form-grid">
+                        <div class="input-group">
+                            <label>Nome da Obra</label>
+                            <input type="text" id="nomeObra" placeholder="Ex: Edifício Central" required>
+                        </div>
+                        <div class="input-group">
+                            <label>CEP</label>
+                            <input type="text" id="cep" placeholder="00000-000" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Endereço (Logradouro)</label>
+                            <input type="text" id="logradouro" readonly placeholder="Preenchimento automático">
+                        </div>
+                        <div class="input-group">
+                            <label>Bairro</label>
+                            <input type="text" id="bairro" readonly>
+                        </div>
+                        <div class="input-group">
+                            <label>Cidade</label>
+                            <input type="text" id="cidade" readonly>
+                        </div>
+                        <div class="input-group">
+                            <label>Número</label>
+                            <input type="text" id="numero" placeholder="Ex: 123" required>
+                        </div>
+                        <div class="input-group full-width">
+                            <label>Orçamento Global Estimado (R$)</label>
+                            <input type="text" id="orcamentoInicial" placeholder="0,00">
+                        </div>
+
+                        <div class="orcamento-detalhado full-width" style="margin-top: 30px;">
+                            <h3><i class="fas fa-list-check"></i> Orçamento Detalhado (Materiais/Serviços)</h3>
+                            <table class="tabela-orcamento" id="tabelaOrcamento">
+                                <thead>
+                                    <tr>
+                                        <th>Item / Descrição</th>
+                                        <th>Qtd.</th>
+                                        <th>Unidade</th>
+                                        <th>Valor Unit. (R$)</th>
+                                        <th>Total (R$)</th>
+                                        <th>Ação</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="listaItens"></tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="4" style="text-align: right; font-weight: bold; padding: 15px;">Total da Obra:</td>
+                                        <td colspan="2" style="font-weight: bold; color: #3b82f6; font-size: 1.1rem;" id="valorTotalObra">R$ 0,00</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                            <button type="button" class="btn-adicionar-item" onclick="adicionarLinha()">
+                                <i class="fas fa-plus-circle"></i> Adicionar Item
+                            </button>
+                        </div>
+
+                        <div class="form-actions full-width" style="margin-top: 40px; border-top: 1px solid #e2e8f0; padding-top: 20px;">
+                            <button type="submit" class="btn-primary" style="height: 50px; width: 250px;">
+                                <i class="fas fa-save"></i> Salvar Obra Completa
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+    
+    <script src="firebase-config.js"></script>
+    <script src="script.js"></script> 
+</body>
+</html>
