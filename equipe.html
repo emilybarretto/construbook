@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Construbook - Equipe</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-logo"><h2>Construbook</h2></div>
+            <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()" title="Recoler/Expandir menu">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <ul class="sidebar-menu">
+                <li><a href="dashboard.html"><i class="fas fa-home"></i> Início</a></li>
+                <li><a href="nova-obra.html"><i class="fas fa-building"></i> Obras</a></li>
+                <li class="active"><a href="equipe.html"><i class="fas fa-users"></i> Equipe</a></li>
+                <li><a href="fornecedores.html"><i class="fas fa-truck"></i> Fornecedores</a></li>
+                <li><a href="documentos.html"><i class="fas fa-folder-open"></i> Documentos</a></li>
+                <li><a href="contratos.html"><i class="fas fa-file-signature"></i> Contratos</a></li>
+                <li><a href="configuracoes.html"><i class="fas fa-cog"></i> Configurações</a></li>
+            </ul>
+        </aside>
+
+        <div class="main-wrapper">
+            <header class="topbar">
+                <div class="search-bar"><i class="fas fa-search"></i><input type="text" placeholder="Buscar..."></div>
+                <div class="user-profile">
+                    <i class="fas fa-bell" style="margin-right:15px;color:#64748b;cursor:pointer;"></i>
+                    <div class="avatar-iniciais">EN</div>
+                    <span class="user-name">Carregando...</span>
+                </div>
+            </header>
+
+            <main class="content">
+                <div class="page-header" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:15px;">
+                    <div><h1>Equipe</h1><p>Cadastre e gerencie membros da equipe</p></div>
+                    <button onclick="abrirModalMembro()" class="btn-primary" style="padding:12px 20px;font-size:14px;">
+                        <i class="fas fa-user-plus"></i> Novo Membro
+                    </button>
+                </div>
+
+                <div class="card-content">
+                    <table class="tabela-orcamento">
+                        <thead>
+                            <tr><th>Nome</th><th>Cargo</th><th>Obra</th><th>Telefone</th><th>Email</th><th style="text-align:center">Ações</th></tr>
+                        </thead>
+                        <tbody id="tabelaEquipeBody">
+                            <tr><td colspan="5" style="text-align:center;color:#94a3b8;padding:40px;"><i class="fas fa-inbox" style="font-size:24px;opacity:0.3;display:block;margin-bottom:8px;"></i>Nenhum membro cadastrado.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal Novo/Edição Membro -->
+    <div id="modalMembro" class="modal-overlay">
+        <div class="modal-content" style="max-width:500px;">
+            <h3 style="margin-bottom:5px;color:#1e293b;"><i class="fas fa-user-plus" style="color:#3b82f6;margin-right:8px;"></i><span id="modalMembroTitulo">Novo Membro</span></h3>
+            <p style="color:#64748b;margin-bottom:20px;font-size:13px;">Preencha os dados do membro da equipe</p>
+            <form id="formMembro" style="display:flex;flex-direction:column;gap:14px;">
+                <input type="hidden" id="membroEditId">
+                <div class="input-group">
+                    <label>Obra Vinculada</label>
+                    <select id="membroObra"><option value="">🔘 Global (todas as obras)</option></select>
+                </div>
+                <div class="input-group">
+                    <label>Nome Completo</label>
+                    <input type="text" id="membroNome" placeholder="Ex: João da Silva" required>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                    <div class="input-group">
+                        <label>Cargo</label>
+                        <select id="membroCargo" required>
+                            <option>Engenheiro Civil</option>
+                            <option>Engenheiro Eletricista</option>
+                            <option>Engenheiro Hidráulico</option>
+                            <option>Mestre de Obras</option>
+                            <option>Pedreiro</option>
+                            <option>Eletricista</option>
+                            <option>Encanador</option>
+                            <option>Pintor</option>
+                            <option>Servente</option>
+                            <option>Arquiteto</option>
+                            <option>Administrador de Obras</option>
+                            <option>Outro</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Telefone</label>
+                        <input type="text" id="membroTelefone" placeholder="(00) 00000-0000" required>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Email</label>
+                    <input type="email" id="membroEmail" placeholder="joao@email.com">
+                </div>
+                <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:6px;">
+                    <button type="button" onclick="fecharModalMembro()" class="btn-cancel">Cancelar</button>
+                    <button type="submit" class="btn-primary"><i class="fas fa-save"></i> Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="equipe.js"></script>
+    <script>
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('collapsed');
+        }
+    </script>
+</body>
+</html>

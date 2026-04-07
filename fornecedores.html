@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Construbook - Fornecedores</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-logo"><h2>Construbook</h2></div>
+            <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()" title="Recoler/Expandir menu">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="sidebar-menu">
+                <li><a href="dashboard.html"><i class="fas fa-home"></i> Início</a></li>
+                <li><a href="nova-obra.html"><i class="fas fa-building"></i> Obras</a></li>
+                <li><a href="equipe.html"><i class="fas fa-users"></i> Equipe</a></li>
+                <li class="active"><a href="fornecedores.html"><i class="fas fa-truck"></i> Fornecedores</a></li>
+                <li><a href="documentos.html"><i class="fas fa-folder-open"></i> Documentos</a></li>
+                <li><a href="contratos.html"><i class="fas fa-file-signature"></i> Contratos</a></li>
+                <li><a href="configuracoes.html"><i class="fas fa-cog"></i> Configurações</a></li>
+            </ul>
+        </aside>
+
+        <div class="main-wrapper">
+            <header class="topbar">
+                <div class="search-bar"><i class="fas fa-search"></i><input type="text" placeholder="Buscar..."></div>
+                <div class="user-profile">
+                    <i class="fas fa-bell" style="margin-right:15px;color:#64748b;cursor:pointer;"></i>
+                    <div class="avatar-iniciais">EN</div>
+                    <span class="user-name">Carregando...</span>
+                </div>
+            </header>
+
+            <main class="content">
+                <div class="page-header" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:15px;">
+                    <div><h1>Fornecedores</h1><p>Cadastre lojas e fornecedores de materiais</p></div>
+                    <button onclick="abrirModalFornecedor()" class="btn-primary" style="padding:12px 20px;font-size:14px;">
+                        <i class="fas fa-plus"></i> Novo Fornecedor
+                    </button>
+                </div>
+
+                <div class="card-content">
+                    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px;" id="gridFornecedores">
+                        <!-- Cards serão inseridos via JS -->
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="modalFornecedor" class="modal-overlay">
+        <div class="modal-content" style="max-width:500px;">
+            <h3 style="margin-bottom:5px;color:#1e293b;"><i class="fas fa-truck" style="color:#f97316;margin-right:8px;"></i><span id="modalFornecedorTitulo">Novo Fornecedor</span></h3>
+            <p style="color:#64748b;margin-bottom:20px;font-size:13px;">Dados do fornecedor</p>
+            <form id="formFornecedor" style="display:flex;flex-direction:column;gap:14px;">
+                <input type="hidden" id="fornecedorEditId">
+                <div class="input-group"><label>Obra Vinculada</label><select id="fornecedorObra"><option value="">🔘 Global (todas as obras)</option></select></div>
+                <div class="input-group"><label>Nome / Razão Social</label><input type="text" id="forNome" placeholder="Ex: Casa do Construtor LTDA" required></div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                    <div class="input-group"><label>Categoria</label><select id="forCategoria" required>
+                        <option>Material Básico</option><option>Elétrica</option><option>Hidráulica</option><option>Acabamento</option><option>Ferramentas</option><option>Equipamentos</option><option>Tintas</option><option>Piso e Revestimento</option><option>Outro</option>
+                    </select></div>
+                    <div class="input-group"><label>Telefone</label><input type="text" id="forTelefone" placeholder="(00) 0000-0000"></div>
+                </div>
+                <div class="input-group"><label>Email</label><input type="email" id="forEmail" placeholder="contato@empresa.com"></div>
+                <div class="input-group"><label>Endereço</label><input type="text" id="forEndereco" placeholder="Rua, número - Bairro"></div>
+                <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:6px;">
+                    <button type="button" onclick="fecharModalFornecedor()" class="btn-cancel">Cancelar</button>
+                    <button type="submit" class="btn-primary"><i class="fas fa-save"></i> Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="fornecedores.js"></script>
+    <script>
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('collapsed');
+        }
+    </script>
+</html>

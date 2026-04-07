@@ -6,25 +6,27 @@
     <title>Construbook - Painel Executivo</title>
     
     <link rel="stylesheet" href="style.css">
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
     <div class="app-container">
         
-        <aside class="sidebar">
+        <aside class="sidebar" id="sidebar">
             <div class="sidebar-logo">
                 <h2>🏗️ Construbook</h2>
             </div>
-            
+            <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()" title="Recoler/Expandir menu">
+                <i class="fas fa-bars"></i>
+            </button>
             <ul class="sidebar-menu">
                 <li class="active"><a href="dashboard.html"><i class="fas fa-home"></i> Início</a></li>
                 <li><a href="nova-obra.html"><i class="fas fa-building"></i> Obras</a></li>
-                <li><a href="etapas.html"><i class="fas fa-tasks"></i> Etapas</a></li>
-                <li><a href="compras.html"><i class="fas fa-shopping-cart"></i> Compras</a></li>
-                <li><a href="financeiro.html"><i class="fas fa-dollar-sign"></i> Financeiro</a></li>
-                <li><a href="relatorios.html"><i class="fas fa-chart-line"></i> Relatórios</a></li>
+                <li><a href="equipe.html"><i class="fas fa-users"></i> Equipe</a></li>
+                <li><a href="fornecedores.html"><i class="fas fa-truck"></i> Fornecedores</a></li>
+                <li><a href="documentos.html"><i class="fas fa-folder-open"></i> Documentos</a></li>
+                <li><a href="contratos.html"><i class="fas fa-file-signature"></i> Contratos</a></li>
+                <li><a href="configuracoes.html"><i class="fas fa-cog"></i> Configurações</a></li>
             </ul>
         </aside>
 
@@ -38,78 +40,67 @@
 
                 <div class="user-profile">
                     <i class="fas fa-bell notification-icon" style="margin-right: 15px; color: #64748b; cursor: pointer;"></i>
-                    
                     <div class="avatar-iniciais">EN</div>
-                    
                     <span class="user-name">Carregando...</span>
                 </div>
             </header>
 
-            <main class="content">
-                
-                <div class="page-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
-                    <div>
-                        <h1>Visão Geral do Sistema</h1>
-                        <p>Resumo financeiro e andamento das obras</p>
-                    </div>
+<main class="content">
+    
+    <div class="page-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+        <div>
+            <h1>Painel de Obras</h1>
+            <p>Acompanhamento visual e status dos projetos</p>
+        </div>
 
-                    <div class="filtro-dashboard" style="background: var(--white); padding: 10px 20px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); display: flex; align-items: center; gap: 10px;">
-                        <i class="fas fa-sitemap" style="color: var(--primary);"></i>
-                        <label for="filtroObraDash" style="font-size: 13px; font-weight: 600; color: var(--text-dark);">Contexto:</label>
-                        
-                        <select id="filtroObraDash" style="border: none; background: transparent; font-size: 14px; font-weight: 700; color: var(--primary); cursor: pointer; outline: none;">
-                            <option value="todas">Visão Geral (Portfólio Completo)</option>
-                        </select>
-                    </div>
-                </div>
+        <button onclick="window.location.href='nova-obra.html'" class="btn-primary" style="padding: 12px 20px; font-size: 14px;">
+            <i class="fas fa-plus"></i> Nova Obra
+        </button>
+    </div>
 
-                <div class="resumo-cards">
-                    <div class="card card-active">
-                        <div class="card-info">
-                            <h3>Obras Ativas</h3>
-                            <h2 id="qtdObras">0</h2>
-                        </div>
-                        <i class="fas fa-hard-hat icone-card"></i>
-                    </div>
-                    
-                    <div class="card card-budget">
-                        <div class="card-info">
-                            <h3>Total Orçado</h3>
-                            <h2 id="valorOrcado">R$ 0,00</h2>
-                        </div>
-                        <i class="fas fa-file-invoice-dollar icone-card"></i>
-                    </div>
-                    
-                    <div class="card card-executed">
-                        <div class="card-info">
-                            <h3>Total Executado</h3>
-                            <h2 id="valorExecutado">R$ 0,00</h2>
-                        </div>
-                        <i class="fas fa-chart-pie icone-card"></i>
-                    </div>
-                </div>
+    <div class="kanban-board" style="margin-top: 10px;">
+        
+        <div class="kanban-column">
+            <div class="kanban-header planning">
+                <h3>📋 Planejamento</h3>
+                <span class="badge" id="count-plan">0</span>
+            </div>
+            <div class="kanban-cards" id="col-planejamento"></div>
+        </div>
 
-                <div class="graficos-container">
-                    <div class="grafico-card">
-                        <h3>Despesas por Categoria (Todas as Obras)</h3>
-                        <div class="grafico-wrapper">
-                            <canvas id="graficoDespesas"></canvas>
-                        </div>
-                    </div>
-                </div>
+        <div class="kanban-column">
+            <div class="kanban-header active">
+                <h3>🚧 Obras Ativas</h3>
+                <span class="badge" id="count-ativas">0</span>
+            </div>
+            <div class="kanban-cards" id="col-ativas"></div>
+        </div>
 
-            </main>
+        <div class="kanban-column">
+            <div class="kanban-header done">
+                <h3>✅ Concluídas</h3>
+                <span class="badge" id="count-concluidas">0</span>
+            </div>
+            <div class="kanban-cards" id="col-concluidas"></div>
+        </div>
+
+    </div>
+
+</main>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
     
     <script src="firebase-config.js"></script>
     <script src="dashboard.js"></script>
-
+    <script>
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('collapsed');
+        }
+    </script>
 </body>
 </html>

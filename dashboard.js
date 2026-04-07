@@ -1,145 +1,76 @@
-let meuGrafico = null; // Variável para controlar o desenho do gráfico para não bugar
+let usuarioAtual = null;
 
-// =========================================================
-// 1. VERIFICA LOGIN, ATUALIZA AVATAR E INICIA O SISTEMA
-// =========================================================
 auth.onAuthStateChanged(async (user) => {
     if (user) {
-        // --- A) ATUALIZAR O NOME E AS INICIAIS LÁ NO TOPO ---
-        const nomeCompleto = user.displayName || "Engenheiro(a)";
+        usuarioAtual = user;
+        document.querySelector('.user-name').innerText = user.displayName || "Engenheiro(a)";
+        const iniciais = (user.displayName || "EN").split(" ").map(n => n[0]).join("").toUpperCase().substring(0, 2);
+        document.querySelector('.avatar-iniciais').innerText = iniciais;
         
-        // Coloca o nome na tela
-        const spanNome = document.querySelector('.user-name');
-        if (spanNome) spanNome.textContent = nomeCompleto;
-
-        // Calcula as iniciais
-        let iniciais = "EN";
-        if (nomeCompleto !== "Engenheiro(a)") {
-            const partesNome = nomeCompleto.trim().split(" ");
-            if (partesNome.length > 1) {
-                // Primeira letra do 1º nome + Primeira letra do último nome
-                iniciais = partesNome[0][0].toUpperCase() + partesNome[partesNome.length - 1][0].toUpperCase();
-            } else {
-                iniciais = nomeCompleto.substring(0, 2).toUpperCase();
-            }
-        }
-
-        // Coloca as iniciais na bolinha azul
-        const divAvatar = document.querySelector('.avatar-iniciais');
-        if (divAvatar) divAvatar.textContent = iniciais;
-
-        // --- B) PUXAR OS DADOS REAIS DO FIREBASE ---
-        await carregarDadosDoDashboard(user.uid);
-
+        await carregarKanban(user.uid);
     } else {
-        // Se não tiver logado, manda pro login
         window.location.href = 'index.html';
     }
 });
 
-// =========================================================
-// 2. BUSCAR DADOS (OBRAS + FINANCEIRO)
-// =========================================================
-async function carregarDadosDoDashboard(idDoUsuario) {
+async function carregarKanban(uid) {
     try {
-        // --- A) BUSCANDO OBRAS ---
-        const obrasRef = await db.collection("obras").where("idUsuario", "==", idDoUsuario).get();
-        let totalDeObras = 0;
-        let somaDoOrcamento = 0;
+        // Busca apenas as obras (não precisa mais buscar financeiro aqui)
+        const obrasSnap = await db.collection("obras").where("idUsuario", "==", uid).get();
 
-        const selectFiltro = document.getElementById('filtroObraDash');
-        if (selectFiltro) {
-            selectFiltro.innerHTML = '<option value="todas">Visão Geral (Portfólio Completo)</option>';
-        }
+        let contPlan = 0, contAtivas = 0, contConcluidas = 0;
 
-        obrasRef.forEach((doc) => {
+        const colPlan = document.getElementById('col-planejamento');
+        const colAtiv = document.getElementById('col-ativas');
+        const colConc = document.getElementById('col-concluidas');
+        colPlan.innerHTML = ''; colAtiv.innerHTML = ''; colConc.innerHTML = '';
+
+        obrasSnap.forEach(doc => {
             const obra = doc.data();
-            totalDeObras++;
-            somaDoOrcamento += parseFloat(obra.orcamentoInicial) || 0;
-            if (selectFiltro) selectFiltro.innerHTML += `<option value="${doc.id}">${obra.nome}</option>`;
-        });
-
-        // --- B) BUSCANDO DESPESAS (O NOVO PODER) ---
-        const despesasRef = await db.collection("financeiro").where("idUsuario", "==", idDoUsuario).get();
-        let totalExecutado = 0;
-        
-        // Criamos "baldes" vazios para somar o dinheiro de cada categoria
-        const gastosPorCategoria = {
-            'Fundação': 0, 'Alvenaria': 0, 'Acabamento': 0, 
-            'Elétrica': 0, 'Hidráulica': 0, 'Estrutura': 0
-        };
-
-        despesasRef.forEach((doc) => {
-            const despesa = doc.data();
-            const valor = parseFloat(despesa.valor) || 0;
+            const idObra = doc.id; // O ID secreto da obra no Firebase
             
-            totalExecutado += valor; // Soma no Montante Total Executado
-            
-            // Soma o valor no "balde" da categoria certa
-            if (gastosPorCategoria[despesa.categoria] !== undefined) {
-                gastosPorCategoria[despesa.categoria] += valor;
+            const status = obra.status || "ativa"; 
+            const cidade = obra.cidade || "Feira de Santana";
+            const valorFormat = parseFloat(obra.orcamentoInicial || 0).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
+
+            // O pulo do gato: onclick manda o ID para a nova página!
+            const cardHTML = `
+                <div class="obra-card" onclick="abrirDetalhes('${idObra}')">
+                    <div class="obra-card-img default-bg"></div>
+                    <div class="obra-card-body">
+                        <div class="obra-card-title">${obra.nome}</div>
+                        <div class="obra-card-city"><i class="fas fa-map-marker-alt"></i> ${cidade}</div>
+                        <div class="obra-card-budget">${valorFormat}</div>
+                    </div>
+                </div>
+            `;
+
+            if (status === "planejamento") {
+                colPlan.innerHTML += cardHTML;
+                contPlan++;
+            } else if (status === "concluida") {
+                colConc.innerHTML += cardHTML;
+                contConcluidas++;
+            } else {
+                colAtiv.innerHTML += cardHTML;
+                contAtivas++;
             }
         });
 
-        // --- C) INJETAR OS NÚMEROS REAIS NA TELA ---
-        if (document.getElementById('qtdObras')) {
-            document.getElementById('qtdObras').innerText = totalDeObras;
-        }
-        if (document.getElementById('valorOrcado')) {
-            document.getElementById('valorOrcado').innerText = somaDoOrcamento.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-        }
-        if (document.getElementById('valorExecutado')) {
-            document.getElementById('valorExecutado').innerText = totalExecutado.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-        }
-
-        // --- D) MANDAR DESENHAR O GRÁFICO REAL ---
-        renderizarGrafico(gastosPorCategoria);
+        // Atualiza as bolinhas contadoras
+        document.getElementById('count-plan').innerText = contPlan;
+        document.getElementById('count-ativas').innerText = contAtivas;
+        document.getElementById('count-concluidas').innerText = contConcluidas;
 
     } catch (error) {
-        console.error("Erro ao puxar dados do Firebase para o Dashboard:", error);
+        console.error("Erro ao carregar o Kanban:", error);
     }
 }
 
-// =========================================================
-// 3. DESENHAR O GRÁFICO (AGORA COM DADOS DO BANCO)
-// =========================================================
-function renderizarGrafico(gastos) {
-    const canvas = document.getElementById('graficoDespesas');
-    if (!canvas) return; 
-
-    const ctx = canvas.getContext('2d');
-    
-    // Se o gráfico já existir, destrói para não ficar um por cima do outro se o usuário mudar o filtro
-    if (meuGrafico) {
-        meuGrafico.destroy();
-    }
-
-    // Organiza os valores na ordem exata que o gráfico pede
-    const valoresReais = [
-        gastos['Fundação'], gastos['Alvenaria'], gastos['Acabamento'], 
-        gastos['Elétrica'], gastos['Hidráulica'], gastos['Estrutura']
-    ];
-
-    meuGrafico = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: ['Fundação', 'Alvenaria', 'Acabamento', 'Elétrica', 'Hidráulica', 'Estrutura'],
-            datasets: [{
-                data: valoresReais, // <-- A MÁGICA ACONTECE AQUI! DADOS DO FIREBASE!
-                backgroundColor: ['#3b82f6', '#f97316', '#10b981', '#eab308', '#8b5cf6', '#64748b'],
-                borderWidth: 0,
-                hoverOffset: 4
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'right',
-                    labels: { font: { family: "'Inter', sans-serif", size: 12 } }
-                }
-            }
-        }
-    });
+// ==========================================
+// FUNÇÃO PARA ABRIR O DASHBOARD INDIVIDUAL
+// ==========================================
+function abrirDetalhes(idObra) {
+    // Redireciona o usuário para uma nova página e leva o ID da obra na URL
+    window.location.href = `detalhes-obra.html?id=${idObra}`;
 }

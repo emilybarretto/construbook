@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Construbook - Contratos</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-logo"><h2>Construbook</h2></div>
+            <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()" title="Recoler/Expandir menu">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="sidebar-menu">
+                <li><a href="dashboard.html"><i class="fas fa-home"></i> Início</a></li>
+                <li><a href="nova-obra.html"><i class="fas fa-building"></i> Obras</a></li>
+                <li><a href="equipe.html"><i class="fas fa-users"></i> Equipe</a></li>
+                <li><a href="fornecedores.html"><i class="fas fa-truck"></i> Fornecedores</a></li>
+                <li><a href="documentos.html"><i class="fas fa-folder-open"></i> Documentos</a></li>
+                <li class="active"><a href="contratos.html"><i class="fas fa-file-signature"></i> Contratos</a></li>
+                <li><a href="configuracoes.html"><i class="fas fa-cog"></i> Configurações</a></li>
+            </ul>
+        </aside>
+
+        <div class="main-wrapper">
+            <header class="topbar">
+                <div class="search-bar"><i class="fas fa-search"></i><input type="text" placeholder="Buscar..."></div>
+                <div class="user-profile">
+                    <i class="fas fa-bell" style="margin-right:15px;color:#64748b;cursor:pointer;"></i>
+                    <div class="avatar-iniciais">EN</div>
+                    <span class="user-name">Carregando...</span>
+                </div>
+            </header>
+
+            <main class="content">
+                <div class="page-header" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:15px;margin-bottom: 10px;">
+                    <div><h1 style="font-size:28px;">Contratos</h1><p style="color:#64748b;margin-top:4px;">Gerencie contratos, envie para assinatura e acompanhe o status</p></div>
+                    <button onclick="abrirModalContrato()" class="btn-primary" style="padding:12px 24px;font-size:14px;border-radius:10px;">
+                        <i class="fas fa-file-signature"></i> Novo Contrato
+                    </button>
+                </div>
+
+                <!-- Resumo por Status -->
+                <div class="resumo-cards" id="resumoContratos" style="margin-top: 25px; margin-bottom:25px;"></div>
+
+                <div class="card-content">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+                        <div>
+                            <h3 style="font-size:16px;font-weight:700;color:#1e293b;"><i class="fas fa-file-contract" style="color:#10b981;margin-right:10px;"></i>Todos os Contratos</h3>
+                            <p style="font-size:13px;color:#94a3b8;margin-top:4px;" id="histContratosTexto">0 contratos</p>
+                        </div>
+                        <select id="filtroStatusContrato" class="filtro-select" onchange="filtrarContratos()" style="padding:10px 16px;">
+                            <option value="todos">Todos os Status</option>
+                            <option value="rascunho">Rascunho</option>
+                            <option value="enviado">Enviado para Assinatura</option>
+                            <option value="assinado">Assinado</option>
+                        </select>
+                    </div>
+
+                    <div id="gridContratos" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:18px;">
+                        <!-- Inserido via JS -->
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal Novo/Edição Contrato -->
+    <div id="modalContrato" class="modal-overlay">
+        <div class="modal-content" style="max-width:560px;">
+            <h3 style="margin-bottom:5px;color:#1e293b;"><i class="fas fa-file-signature" style="color:#10b981;margin-right:8px;"></i><span id="modalContratoTitulo">Novo Contrato</span></h3>
+            <p style="color:#64748b;margin-bottom:20px;font-size:13px;" id="modalContratoSubtitulo">Preencha os dados do contrato</p>
+            <form id="formContrato" style="display:flex;flex-direction:column;gap:14px;">
+                <input type="hidden" id="contratoEditId">
+                <div class="input-group"><label>Obra Vinculada</label><select id="ctrObra" required><option value="">Selecione uma obra...</option></select></div>
+                <div class="input-group"><label>Título do Contrato</label><input type="text" id="ctrTitulo" placeholder="Ex: Contrato de Prestação de Serviços - Eng. Silva" required></div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                    <div class="input-group"><label>Tipo</label><select id="ctrTipo" required>
+                        <option>Contrato de Obra</option><option>Aditivo Contratual</option><option>Acordo com Fornecedor</option><option>Contrato de Mão de Obra</option><option>Termo de Responsabilidade</option><option>Contrato de Locação de Equipamento</option><option>Outro</option>
+                    </select></div>
+                    <div class="input-group"><label>Valor (R$)</label><input type="text" id="ctrValor" placeholder="0,00"></div>
+                </div>
+                <div class="input-group"><label>Parte Contratada</label><input type="text" id="ctrParte" placeholder="Nome da pessoa ou empresa"></div>
+                <div class="input-group"><label>Email do Signatário</label><input type="email" id="ctrEmailAssinante" placeholder="email@empresa.com"><small style="color:#94a3b8;font-size:11px;margin-top:2px;">Email de quem vai assinar o contrato</small></div>
+                <div class="input-group"><label>Descrição / Observações</label><input type="text" id="ctrDescricao" placeholder="Resumo do contrato"></div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                    <div class="input-group"><label>Data de Início</label><input type="date" id="ctrInicio"></div>
+                    <div class="input-group"><label>Data de Fim</label><input type="date" id="ctrFim"></div>
+                </div>
+
+                <!-- Upload do Contrato -->
+                <div style="border:2px dashed #e2e8f0;border-radius:12px;padding:20px;text-align:center;background:#f8fafc;cursor:pointer;transition:all 0.2s;" id="dropZone" onclick="document.getElementById('ctrArquivo').click()">
+                    <i class="fas fa-cloud-arrow-up" style="font-size:28px;color:#94a3b8;margin-bottom:8px;"></i>
+                    <p style="color:#64748b;font-size:13px;font-weight:600;margin:0;" id="ctrArquivoLabel">Clique ou arraste o PDF do contrato</p>
+                    <input type="file" id="ctrArquivo" accept=".pdf" style="display:none" onchange="handleArquivo(this)">
+                </div>
+
+                <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:6px;">
+                    <button type="button" onclick="fecharModalContrato()" class="btn-cancel">Cancelar</button>
+                    <button type="submit" class="btn-primary"><i class="fas fa-save"></i> Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Assinatura -->
+    <div id="modalAssinatura" class="modal-overlay">
+        <div class="modal-content" style="max-width:520px;text-align:center;">
+            <div id="assIcone" style="width:64px;height:64px;border-radius:50%;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-size:28px;background:rgba(249,115,22,0.1);color:#f97316;">
+                <i class="fas fa-pen-nib"></i>
+            </div>
+            <h3 id="assTitulo" style="color:#1e293b;margin-bottom:4px;">Assinar Contrato</h3>
+            <p id="assTexto" style="color:#64748b;font-size:13px;margin-bottom:16px;">Desenhe sua assinatura no quadro abaixo</p>
+            <div id="assEmailDisplay" style="background:#f8fafc;padding:10px 14px;border-radius:8px;margin-bottom:16px;font-size:13px;">
+                <i class="fas fa-user" style="color:#3b82f6;margin-right:6px;"></i>
+                <strong id="assEmailTexto">—</strong>
+            </div>
+
+            <!-- Canvas de Assinatura -->
+            <div style="position:relative;margin-bottom:12px;">
+                <canvas id="canvasAssinatura" width="440" height="160" style="width:100%;height:160px;border:2px dashed #cbd5e1;border-radius:12px;cursor:crosshair;background:#fff;touch-action:none;"></canvas>
+                <button onclick="limparAssinatura()" style="position:absolute;top:6px;right:10px;border:none;background:#fee2e2;color:#ef4444;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;"><i class="fas fa-eraser"></i> Limpar</button>
+            </div>
+            <p style="font-size:11px;color:#94a3b8;margin-bottom:16px;"><i class="fas fa-info-circle" style="margin-right:4px;"></i>Use o mouse ou o dedo para assinar</p>
+
+            <div style="display:flex;gap:10px;justify-content:center;">
+                <button onclick="fecharModalAssinatura()" class="btn-cancel">Cancelar</button>
+                <button id="btnConfirmarAssinatura" class="btn-primary" style="background:#f97316;"><i class="fas fa-check"></i> Confirmar Assinatura</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Sucesso Assinatura -->
+    <div id="modalAssinaturaOk" class="modal-overlay">
+        <div class="modal-content" style="max-width:480px;text-align:center;">
+            <div class="modal-icone" style="background:rgba(34,197,94,0.1);color:#22c55e;">
+                <i class="fas fa-circle-check"></i>
+            </div>
+            <h3 style="color:#1e293b;margin-bottom:8px;">Contrato Assinado!</h3>
+            <p id="assOkTexto" style="color:#64748b;font-size:14px;margin-bottom:20px;">O contrato foi assinado digitalmente.</p>
+            <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;" id="assOkBotoes">
+                <button onclick="fecharModalAssinaturaOk()" class="btn-cancel">Fechar</button>
+                <button id="btnBaixarPDFAssinado" class="btn-primary" style="background:#10b981;padding:12px 20px;font-size:13px;"><i class="fas fa-download"></i> Baixar PDF Assinado</button>
+                <button id="btnEnviarEmailAssinado" class="btn-primary" style="background:#3b82f6;padding:12px 20px;font-size:13px;"><i class="fas fa-envelope"></i> Enviar por E-mail</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="contratos.js"></script>
+    <script>
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('collapsed');
+        }
+    </script>
+</body>
+</html>
